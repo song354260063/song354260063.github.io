@@ -11,7 +11,7 @@ github_repo: "https://github.com/songjunhao/songjunhao.github.io.git" # you code
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "Goals determine what you going to be!"
+sidebar-about-description: "接触即掌握，用过即专家"
 sidebar-avatar: /img/C12F54CFFD23EE2AB4D919A5B6731044.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
