@@ -232,16 +232,16 @@ dynamic-routing:
     - name: dataSource02
       url: jdbc:oracle:thin:@127.0.0.1:1521:uatnew
       driver: oracle.jdbc.driver.OracleDriver
-      username: smisrelease
-      password: Picc,Life#123
+      username: 111
+      password: 111
       maxActive: 50
       minIdle: 5
       maxWait: 60000
     - name: dataSource03
       url: jdbc:oracle:thin:@127.0.0.1:1521:smistest
       driver: oracle.jdbc.driver.OracleDriver
-      username: piccsmis
-      password: Passw0rd,123
+      username: 111
+      password: 111
       maxActive: 100
       minIdle: 5
       maxWait: 60000
