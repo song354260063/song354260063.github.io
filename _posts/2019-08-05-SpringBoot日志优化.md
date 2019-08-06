@@ -38,7 +38,7 @@ logging:
 
 首先创建一个类继承 ForegroundCompositeConverterBase<ILoggingEvent> 代码如下：
 
-```Java
+```java
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.color.ANSIConstants;
