@@ -321,3 +321,6 @@ public class LogbackColorful extends ForegroundCompositeConverterBase<ILoggingEv
 
 </configuration>
 ```
+根据 配置文件中配置 的 spring.profile.active 所配置的环境，决定使用哪个路径存储文件。截图中为 dev 环境，则文件将选择本地日志路径配置。 
+
+![](https://i.loli.net/2019/08/06/zCSTV4Q8Z3AUmsI.jpg)
