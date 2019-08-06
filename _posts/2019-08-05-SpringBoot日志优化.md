@@ -272,3 +272,52 @@ public class LogbackColorful extends ForegroundCompositeConverterBase<ILoggingEv
 
 </configuration>
 ```
+
+### 根据Spring环境动态配置
+
+使用 logback-spring.xml 作为配置文件，可以使用 SpringBoot 提供的一些动态配置功能。下面介绍如何根据环境动态配置 日志文件存储路径。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- 本地日志路径配置 -->
+  <springProfile name="dev">
+      <property name="dateFileName" value="D://logtest//%d//sys.%d.%i.log" />
+      <property name="localFileName" value="D://logtest//sys.log" />
+  </springProfile>
+
+  <!-- 测试日志路径配置 -->
+  <springProfile name="test">
+      <property name="dateFileName" value="/logs/day/%d/sys/sys.%d.%i.log" />
+      <property name="localFileName" value="/logs/current/sys.log" />
+  </springProfile>
+
+  <!-- 生产日志路径配置 -->
+  <springProfile name="prod">
+      <property name="dateFileName" value="/logs/day/%d/sys/sys.%d.%i.log" />
+      <property name="localFileName" value="/logs/current/sys.log" />
+  </springProfile>
+
+  ... 省略
+  <appender name="syslog"
+            class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 使用 ${`name`} 获取上面配置的 property 的 value -->
+      <File>${localFileName}</File>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+          <!-- 使用 ${`name`} 获取上面配置的 property 的 value -->
+          <fileNamePattern>${dateFileName}</fileNamePattern>
+          <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+              <maxFileSize>200MB</maxFileSize>
+          </timeBasedFileNamingAndTriggeringPolicy>
+      </rollingPolicy>
+      <encoder>
+          <pattern>
+              %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%-15.15thread] %-40.40logger{50} : %msg%n
+          </pattern>
+          <charset>UTF-8</charset>
+      </encoder>
+  </appender>
+  ... 省略
+
+</configuration>
+```
