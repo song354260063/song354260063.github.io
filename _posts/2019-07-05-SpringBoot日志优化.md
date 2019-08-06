@@ -2,7 +2,7 @@
 layout:     post                    # 使用的布局（不需要改）
 title:      SpringBoot日志优化             # 标题
 subtitle:   按天按模块分割日志  #副标题
-date:       2019-8-5              # 时间
+date:       2019-7-5              # 时间
 author:     songjunhao                      # 作者
 header-img: img/post-bg-2015.jpg    #这篇文章标题背景图片
 catalog: true                       # 是否归档
