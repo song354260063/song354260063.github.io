@@ -1,6 +1,6 @@
 ---
 layout:     post                    # 使用的布局（不需要改）
-title:      SpringBoot+MyBatis+Druid 分库处理             # 标题
+title:      SpringBoot+MyBatis+Druid 分库处理（一）-功能实现             # 标题
 subtitle:   使用AbstractRoutingDataSource进行分库操作 #副标题
 date:       2019-08-06              # 时间
 author:     songjunhao                      # 作者
