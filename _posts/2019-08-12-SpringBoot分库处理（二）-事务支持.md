@@ -19,15 +19,27 @@ tags:                               #标签
 
 ### 问题原因分析
 
-Spring 默认事务管理器使用的是 *org.springframework.jdbc.datasource.DataSourceTransactionManager*，我们分析一下源码。具体见如下源码截图。
+Spring集成MyBatis 默认事务管理器使用的是 *org.mybatis.spring.transaction.SpringManagedTransaction*，我们分析一下源码。具体见如下源码截图。
 
-![](https://i.loli.net/2019/08/12/tGmkEvy9i4sl1QO.jpg)
+![](https://i.loli.net/2019/08/13/LY7fJgs2WSmokwu.jpg)
 
-在默认事务处理器中的 doBegin 方法中，首先会判断 当前事务是否已经缓存了 Connection 连接，如果已经缓存了，那么就不会获取新的连接，所以虽然分库了，但是依然使用的是缓存中第一次获取的连接。导致分库失败。
+在默认事务处理器中的 getConnection 方法中，首先会判断 当前事务是否已经缓存了 Connection 连接，如果已经缓存了，那么就不会获取新的连接，所以虽然分库了，但是依然使用的是缓存中第一次获取的连接。导致分库失败。
 
 ### 解决方案
 
 既然是默认事务处理器导致的问题，那就换一个事务处理器。自定义一个支持多连接的事务处理器即可。
+
+Mybatis 提供了一个事务接口，类似 SpringManagedTransaction 的实现，我们只需要实现 org.apache.ibatis.transaction.Transaction 接口即可。
+
+Transaction 接口中的方法描述：
++ 连接相关
+ + getConnection() 方法，获得连接。
+ + close() 方法，关闭连接。
+
++ 事务相关
+ + commit() 方法，事务提交。
+ + rollback() 方法，事务回滚。
+ + getTimeout() 方法，事务超时时间。实际上，目前这个方法都是空实现。
 
 ### 代码实现
 
@@ -114,7 +126,7 @@ public class MultiDataSourceTransaction implements Transaction {
         LOGGER.info("this.autoCommit : {}", this.autoCommit);
         LOGGER.info("this.mainConnection != null : {}", this.mainConnection != null);
         LOGGER.info("this.isConnectionTransactional : {}", this.isConnectionTransactional);
-        if (this.mainConnection != null && this.isConnectionTransactional && !this.autoCommit) {
+        if (this.mainConnection != null && !this.isConnectionTransactional && !this.autoCommit) {
             LOGGER.info("Committing JDBC Connection [" + this.mainConnection + "]");
             this.mainConnection.commit();
             for (Connection connection : otherConnectionMap.values()) {
@@ -125,7 +137,7 @@ public class MultiDataSourceTransaction implements Transaction {
 
     @Override
     public void rollback() throws SQLException {
-        if (this.mainConnection != null && this.isConnectionTransactional && !this.autoCommit) {
+        if (this.mainConnection != null && !this.isConnectionTransactional && !this.autoCommit) {
             LOGGER.info("Rolling back JDBC Connection [" + this.mainConnection + "]");
             this.mainConnection.rollback();
             for (Connection connection : otherConnectionMap.values()) {
@@ -188,4 +200,6 @@ public class MultiDataSourceTransactionFactory extends SpringManagedTransactionF
 
 >别忘了设置数据源的 defaultAutoCommit = false，否则事务会无效哦。
 
-最后尽情的使用 @Transaction 注解吧~
+注意使用此方法不能使用 @Transaction 注解，使用Spring的事务注解，会使用Spring的事务管理器，而非MyBatis的事务管理器。
+
+不使用 @Transaction 注解则，自动使用MyBatis的事务处理器。
