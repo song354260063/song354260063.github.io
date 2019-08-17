@@ -126,7 +126,7 @@ public class MultiDataSourceTransaction implements Transaction {
         LOGGER.info("this.autoCommit : {}", this.autoCommit);
         LOGGER.info("this.mainConnection != null : {}", this.mainConnection != null);
         LOGGER.info("this.isConnectionTransactional : {}", this.isConnectionTransactional);
-        if (this.mainConnection != null && !this.isConnectionTransactional && !this.autoCommit) {
+        if (this.mainConnection != null && this.isConnectionTransactional && !this.autoCommit) {
             LOGGER.info("Committing JDBC Connection [" + this.mainConnection + "]");
             this.mainConnection.commit();
             for (Connection connection : otherConnectionMap.values()) {
@@ -137,7 +137,7 @@ public class MultiDataSourceTransaction implements Transaction {
 
     @Override
     public void rollback() throws SQLException {
-        if (this.mainConnection != null && !this.isConnectionTransactional && !this.autoCommit) {
+        if (this.mainConnection != null && this.isConnectionTransactional && !this.autoCommit) {
             LOGGER.info("Rolling back JDBC Connection [" + this.mainConnection + "]");
             this.mainConnection.rollback();
             for (Connection connection : otherConnectionMap.values()) {
@@ -200,6 +200,4 @@ public class MultiDataSourceTransactionFactory extends SpringManagedTransactionF
 
 >别忘了设置数据源的 defaultAutoCommit = false，否则事务会无效哦。
 
-注意使用此方法不能使用 @Transaction 注解，使用Spring的事务注解，会使用Spring的事务管理器，而非MyBatis的事务管理器。
-
-不使用 @Transaction 注解则，自动使用MyBatis的事务处理器。
+如此便可尽情使用 ***@Transactional*** 注解啦
